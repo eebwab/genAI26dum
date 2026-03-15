@@ -1,4 +1,3 @@
-jobs:
 name: Build and Push to ECR
 
 on:
@@ -11,7 +10,7 @@ permissions:
   id-token: write # Required for OIDC authentication
   contents: read
 
-name: Build and Push to ECR
+
   build-and-push:
     runs-on: ubuntu-latest
     steps:
@@ -42,7 +41,6 @@ name: Build and Push to ECR
       - name: Update ECS Service
         run: |
           aws ecs update-service --cluster educated-zebra-l3p3xz --service task_definition_genai_2026-service-3vpbljcs --force-new-deployment
-
 on:
   push:
     branches:
