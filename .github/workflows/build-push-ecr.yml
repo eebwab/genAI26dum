@@ -1,59 +1,8 @@
 name: Build and Push to AWS ECR
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-  workflow_dispatch:  # Allow manual trigger
-
-env:
-  AWS_REGION: us-east-2
-  ECR_REPOSITORY: gen_ai_2026/backend-solution-genai-2026
-  IMAGE_TAG: ${{ github.sha }}
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
 
-jobs:
-  build-and-push:
-    runs-on: ubuntu-latest
-    
-    permissions:
-      contents: read
-      id-token: write
-
-    steps:
-      # Step 1: Checkout code
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      # Step 2: Set up Docker Buildx (for efficient multi-platform builds)
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      # Step 3: Configure AWS credentials using OIDC (recommended for secrets security)
-      - name: Configure AWS credentials (OIDC)
-        uses: aws-actions/configure-aws-credentials@v4
-        if: env.AWS_ROLE_TO_ASSUME != ''
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      # Alternative if you prefer to use static credentials:
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        if: env.AWS_ACCESS_KEY_ID != ''
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      # Step 4: Login to AWS ECR
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
+...existing code...
 
       # Step 5: Build Docker image
       - name: Build Docker image
