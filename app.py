@@ -281,6 +281,15 @@ def process_request():
 
 
 if __name__ == '__main__':
+    # Force output to stdout
+    import sys
+    print("DEBUG: App is starting...", flush=True) 
+    
     port = int(os.getenv('PORT', 5000))
-    logger.info(f"Starting AegisDevOps backend on port {port}")
-    app.run(host='0.0.0.0', port=port, debug=False)
+    
+    try:
+        logger.info(f"Starting AegisDevOps backend on port {port}")
+        app.run(host='0.0.0.0', port=port, debug=False)
+    except Exception as e:
+        print(f"CRITICAL ERROR: {e}", flush=True)
+        sys.exit(1)
