@@ -11,8 +11,8 @@ on:
   workflow_dispatch:  # Allow manual trigger
 
 env:
-  AWS_REGION: us-east-1
-  ECR_REPOSITORY: aegis-devops-backend
+  AWS_REGION: us-east-2
+  ECR_REPOSITORY: gen_ai_2026/backend-solution-genai-2026
   IMAGE_TAG: ${{ github.sha }}
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
