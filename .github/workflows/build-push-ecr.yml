@@ -1,3 +1,4 @@
+jobs:
 name: Build and Push to ECR
 
 on:
@@ -10,7 +11,7 @@ permissions:
   id-token: write # Required for OIDC authentication
   contents: read
 
-jobs:
+name: Build and Push to ECR
   build-and-push:
     runs-on: ubuntu-latest
     steps:
@@ -35,60 +36,12 @@ jobs:
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
       - name: Update ECS Service
         run: |
           aws ecs update-service --cluster educated-zebra-l3p3xz --service task_definition_genai_2026-service-3vpbljcs --force-new-deployment
-        run: |
-          echo "Image pushed successfully!"
-          echo "Repository: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}"
-          echo "Tag (commit): ${{ env.IMAGE_TAG }}"
-          echo "Tag (latest): latest"
-
-  # Optional: Test the built image
-  test-image:
-    needs: build-and-push
-    runs-on: ubuntu-latest
-    if: success()
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
-
-      - name: Install test dependencies
-        run: |
-          pip install -r requirements.txt
-          pip install pytest requests
-
-      - name: Run tests
-        run: |
-          # Start Flask app in background
-          python app.py &
-          APP_PID=$!
-          sleep 3
-          
-          # Run tests
-          pytest test_stress.py -v
-          
-          # Cleanup
-          kill $APP_PID
-
-  # Optional: Notify deployment
-  notify-deployment:
-    needs: [build-and-push, test-image]
-    runs-on: ubuntu-latest
-    if: success() && github.ref == 'refs/heads/main'
-
-    steps:
-      - name: Deployment successful
-        run: |
-          echo "✅ Docker image built and pushed to ECR successfully!"
-          echo "The Aegis AWS Agent can now pull and deploy this image."
-name: Build and Push to ECR
 
 on:
   push:
